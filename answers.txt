@@ -1,0 +1,129 @@
+-----------------------------------------------------------------------
+ ------ Informatics 2D - 2017/18 - Second Assignment - Planning ------
+-----------------------------------------------------------------------
+ 
+ Write your matriculation number here (your name is not needed)
+ Matriculation Number: s1632798
+ 
+1.1 
+We define an atemporal predicate adjacent(x,y) which means area 'x' is adjacent 
+to area 'y'. Adjacency is a symmetric relation, but adjacent(x,y) is different from 
+adjacent(y,x) in PDDL so we have to write every ajacency twice for the sake of accuracy.
+
+1.2
+We define a fluent predicate At(o, x) which means that an agent, glass or customer 'o' is in area 'x'.
+
+1.3
+- Glass(x) which means that 'x' is a glass
+We define a fluent predicate ContainsBeer(x) which returns whether the glass is filled with beer or not where 'x' must be a glass.
+
+1.4
+- Customer(x) which means that 'x' is a customer
+We define a fluent predicate Served(x) which returns whether the customer has been served or not where 'x' must be a customer.
+
+1.5
+- Location(x) which means 'x' is a location
+
+Let we define all areas as objects of type location.
+Location(UB)
+Location(UF)
+Location(MB)
+Location(MF)
+Location(LB)
+Location(LF)
+
+Let BAR be a constant of type location.
+Location(BAR)
+Let Agent be a constant of type bartender.
+Bartender(Agent)
+
+Initial state:
+Adjacent(UB, UF) and
+Adjacent(UB, MB) and
+Adjacent(UF, UB) and
+Adjacent(UF, MF) and
+Adjacent(MB, UB) and
+Adjacent(MB, LB) and
+Adjacent(MF, UF) and
+Adjacent(MF, LF) and
+Adjacent(LB, MB) and
+Adjacent(LB, LF) and
+Adjacent(LF, MF) and
+Adjacent(LF, LB) and
+Adjacent(BAR, UF)and
+Adjacent(UF, BAR)and
+At(Agent, BAR)	 and
+Glass(G)	 and
+At(G, BAR)	 and
+Customer(C)	 and
+At(C, LB)
+
+1.6
+We define a fluent predicate EmptyHand(x) which checks whether the agent is currently holding something where 'x' must be a bartender.
+We also define Holding(x, g) which checks if a bartender 'x' is currently holding a glass 'g'.
+
+Action(PickUp(g, l), 
+PRECOND: Location(l) ∧ Glass(g) ∧ At(Agent, l) ∧ At(g, l) ∧ EmptyHand(Agent) ∧ not-ContainsBeer(g)
+EFFECT: not-EmptyHand(Agent) ∧ Holding(Agent,g))
+
+1.7
+Action(HandOver(g,c,l), 
+PRECOND: Location(l) ∧ Glass(g) ∧ Customer(c) ∧ At(Agent, l) ∧ At(c, l) ∧ Holding(Agent,g) ∧ ContainsBeer(g) ∧ not-Served(c)
+EFFECT: EmptyHand(Agent) ∧ not-Holding(Agent,g) ∧ Served(c))
+
+1.8
+Action(Pour(g), 
+PRECOND: Glass(g) ∧ At(Agent, BAR) ∧ Holding(Agent,g) ∧ not-ContainsBeer(g)
+EFFECT: ContainsBeer(g))
+
+1.9
+Action(Move(from,to), 
+PRECOND: Location(from) ∧ Location(to) ∧ At(Agent, from) ∧ not(from = to) ∧ Adjacent(from,to)
+EFFECT: not-At(Agent,from) ∧ At(Agent, to))
+
+1.10
+We define the constants, the objects and the map as we did in 1.5.
+
+Let BAR be a constant of type location.
+Location(BAR)
+Let Agent be a constant of type bartender.
+Bartender(Agent)
+
+Initial state:
+Location(UF) ∧ Adjacent(BAR, UF) ∧ Glass(G) ∧ Customer(C) ∧ At(Agent, BAR) ∧ At(G, BAR) ∧ At(C, UF) ∧ EmptyHand(Agent)
+
+Note: we do not include the false predicates in the initial state.
+
+Goal:
+Served(C) ∧ EmptyHand(Agent) ∧ At(C, UF) ∧ At(Agent, UF) ∧ not-Holding(Agent,G)
+
+In order to execute an action we have to satisfy the preconditions.
+
+1. 
+Current state description: Served(C) ∧ EmptyHand(Agent) ∧ At(C, UF) ∧ At(Agent, UF) ∧ not-Holding(Agent,G)
+Relevant Actions: HandOver
+Choose: HandOver(G,C, UF)
+
+2.
+Current state description:  Location(UF) ∧ Glass(G) ∧ Customer(C) ∧ At(Agent, UF) ∧ At(C, UF) ∧ Holding(Agent, G) ∧ ContainsBeer(G) ∧ not-Served(C) ∧ non-EmptyHand(Agent) 
+Relevant Actions: Move(BAR, UF), Move(MF, UF), Move(UB, UF)
+Choose: Move(BAR, UF)
+
+3.
+Current state description:  Location(UF) ∧ Adjacent(BAR, UF) ∧ Glass(G) ∧ Customer(C) ∧ At(Agent, BAR) ∧ At(C, UF) ∧ Holding(Agent, G) ∧ ContainsBeer(G) ∧ non-EmptyHand(Agent) ∧ not-Served(C)
+Relevant Actions: Move(UF, BAR), Pour(G)
+Choose: Pour(G)
+
+4.
+Current state description:  Location(UF) ∧ Adjacent(BAR, UF) ∧ Glass(G) ∧ Customer(C) ∧ At(Agent, BAR) ∧ At(C, UF) ∧ Holding(Agent, G) ∧ not-ContainsBeer(G) ∧ non-EmptyHand(Agent) ∧ not-Served(C)
+Relevant Actions: Move(UF, BAR), PickUp(G)
+Choose: PickUp(G)
+
+5.
+Current state description:  Location(UF) ∧ Adjacent(BAR, UF) ∧ Glass(G) ∧ Customer(C) ∧ At(Agent, BAR) ∧ At(C, UF) ∧ not-Holding(Agent, G) ∧ At(G, BAR) ∧ EmptyHand(Agent) ∧ not-ContainsBeer(G) ∧ not-Served(C)
+
+We reached the initial state.
+
+--------------------
+Answers to parts 2 and 3 should be included in the appropriate
+*-template.pddl files.
